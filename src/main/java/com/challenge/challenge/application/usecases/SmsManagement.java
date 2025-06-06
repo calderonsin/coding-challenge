@@ -1,8 +1,8 @@
-package com.challenge.challenge.service;
+package com.challenge.challenge.application.usecases;
 
 import java.util.ArrayList;
 
-public class SmsManagement implements ManageNotification{
+public class SmsManagement implements ManageNotification {
     private final int  SMS_MAX_LENGTH = 160;
     private static final String SUFFIX_TEMPLATE = " - Part %d of %d";
     @Override
@@ -11,7 +11,7 @@ public class SmsManagement implements ManageNotification{
     }
 
 
-    private Boolean IsShorMessage(String message) {
+    private Boolean IsShortMessage(String message) {
         return message.length() <= SMS_MAX_LENGTH;
     }
 
@@ -19,16 +19,18 @@ public class SmsManagement implements ManageNotification{
 
 
 
+
+
     // You need to fix this method, currently it will crash with > 160 char messages.
     private String sendSmsMessage (String message, Integer recipient, Integer sender) {
-        if(IsShorMessage(message)){
+        if(IsShortMessage(message)){
             deliverMessageViaCarrier(message, recipient, sender);
             return message;
         }
         ArrayList<String> messageList = splitMessage(message);
         for(String text : messageList) deliverMessageViaCarrier(text, recipient, sender);
 
-        return  IsShorMessage(message) ? message: messageList.toString();
+        return  IsShortMessage(message) ? message: messageList.toString();
     }
 
     public ArrayList<String> splitMessage(String message) {
@@ -39,12 +41,12 @@ public class SmsManagement implements ManageNotification{
         ArrayList<String> messageList = new  ArrayList<>();
 
         while(left < messageBuilder.length()){
-            String sufix = String.format(SUFFIX_TEMPLATE, countParts, expectedParts);
-            int availableSpace = SMS_MAX_LENGTH - sufix.length();
+            String suffix = String.format(SUFFIX_TEMPLATE, countParts, expectedParts);
+            int availableSpace = SMS_MAX_LENGTH - suffix.length();
             int right = Math.min( left + availableSpace, message.length());
 
             if (right < message.length()) right = findOptimalSplitPoint(message, left, right);
-            messageList.add( new StringBuilder(message.substring(left, right)).append(sufix).toString());
+            messageList.add( new StringBuilder(message.substring(left, right)).append(suffix).toString());
 
             left = right;
             countParts += 1;
