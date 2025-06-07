@@ -1,9 +1,11 @@
 package com.challenge.challenge;
 
 import com.challenge.challenge.application.usecases.SmsManagement;
+import com.challenge.challenge.domain.Notification;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,18 +17,19 @@ public class SmsManagementTest {
 
 @Test
     public void NoSplitTextWhenLesserThan160(){
-        String result = smsManagement.sendNotification("Short message", 1, 1);
-        assertEquals("Short message", result);
+    Notification notification = new Notification("Short message", "1", "1");
+    List<String> result = smsManagement.sendNotification(notification);
+    assertEquals("Short message", result);
 
     }
     @Test
     public void SplitTextWhenGreaterThan160(){
-        ArrayList<String> result = smsManagement.splitMessage(LONG_MESSAGE);
-        for(String messagepart: result){
-            System.out.println(messagepart);
-        }
+    ArrayList<String> result = smsManagement.splitMessage(LONG_MESSAGE);
+    for(String messagepart: result){
+        System.out.println(messagepart);
+    }
 
-        assertTrue(result.size() > 1);
+    assertTrue(result.size() > 1);
 
     }
 }

@@ -1,36 +1,39 @@
 package com.challenge.challenge.application.usecases;
 
-import java.util.ArrayList;
+import com.challenge.challenge.application.dtos.NotificationRequest;
+import com.challenge.challenge.domain.Notification;
+import com.challenge.challenge.exceptions.SmsValidationException;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+@Service
 public class SmsManagement implements ManageNotification {
     private final int  SMS_MAX_LENGTH = 160;
     private static final String SUFFIX_TEMPLATE = " - Part %d of %d";
     @Override
-    public String sendNotification(String message, Integer recipient, Integer sender) {
-        return sendSmsMessage(message, recipient, sender);
+    public List<String> sendNotification(Notification notification) {
+        return sendSmsMessage(notification);
     }
 
 
-    private Boolean IsShortMessage(String message) {
-        return message.length() <= SMS_MAX_LENGTH;
-    }
+        // You need to fix this method, currently it will crash with > 160 char messages.
+    private List<String> sendSmsMessage (Notification notification) {
+        String message = notification.getMessage();
+        String recipient = notification.getRecipient();
+        String sender = notification.getSender();
 
-
-
-
-
-
-
-    // You need to fix this method, currently it will crash with > 160 char messages.
-    private String sendSmsMessage (String message, Integer recipient, Integer sender) {
+        validateInputs(notification);
         if(IsShortMessage(message)){
             deliverMessageViaCarrier(message, recipient, sender);
-            return message;
+            return List.of(message);
         }
         ArrayList<String> messageList = splitMessage(message);
         for(String text : messageList) deliverMessageViaCarrier(text, recipient, sender);
 
-        return  IsShortMessage(message) ? message: messageList.toString();
+        return messageList;
     }
 
     public ArrayList<String> splitMessage(String message) {
@@ -86,10 +89,44 @@ public class SmsManagement implements ManageNotification {
         }
     }
 
+    private Boolean IsShortMessage(String message) {
+        return message.length() <= SMS_MAX_LENGTH;
+    }
+
 
     // This method actually sends the message via an already existing SMS carrier
 // You just have to display the message to your console
-    private void deliverMessageViaCarrier (String text, Integer recipient, Integer sender) {
+    private void deliverMessageViaCarrier (String text, String recipient, String sender) {
         System.out.println(text);
+    }
+    private void validateInputs(Notification notification) {
+        String message = notification.getMessage();
+        String recipient = notification.getRecipient();
+        String sender = notification.getSender();
+        if (Objects.isNull(message) || message.trim().isEmpty()) {
+            throw new SmsValidationException("Message cannot be null or empty");
+        }
+
+        if (Objects.isNull(recipient) || recipient.trim().isEmpty()) {
+            throw new SmsValidationException("Recipient cannot be null or empty");
+        }
+
+        if (Objects.isNull(sender) || sender.trim().isEmpty()) {
+            throw new SmsValidationException("Sender cannot be null or empty");
+        }
+
+        // Basic phone number validation
+        if (isNotValidPhoneNumber(recipient)) {
+            throw new SmsValidationException("Invalid recipient phone number format");
+        }
+
+        if (isNotValidPhoneNumber(sender)) {
+            throw new SmsValidationException("Invalid sender phone number format");
+        }
+    }
+
+    private boolean isNotValidPhoneNumber(String phoneNumber) {
+        String cleaned = phoneNumber.replaceAll("[\\s\\-\\(\\)\\+]", "");
+        return !cleaned.matches("\\d{7,15}");
     }
 }

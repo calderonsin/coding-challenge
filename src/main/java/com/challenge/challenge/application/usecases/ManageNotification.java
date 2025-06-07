@@ -1,6 +1,11 @@
 package com.challenge.challenge.application.usecases;
 
+
+import com.challenge.challenge.domain.Notification;
+
+import java.util.List;
+
 public interface ManageNotification {
-    public String sendNotification(String message, Integer recipient, Integer sender);
+    List<String> sendNotification(Notification notification);
 
 }
