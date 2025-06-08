@@ -1,6 +1,5 @@
 package com.challenge.challenge.application.usecases;
 
-import com.challenge.challenge.application.dtos.NotificationRequest;
 import com.challenge.challenge.domain.Notification;
 import com.challenge.challenge.exceptions.SmsValidationException;
 import org.springframework.stereotype.Service;
@@ -10,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class SmsManagement implements ManageNotification {
+public class SmsManagementUseCase implements ManageNotification {
     private final int  SMS_MAX_LENGTH = 160;
     private static final String SUFFIX_TEMPLATE = " - Part %d of %d";
     @Override
@@ -25,8 +24,9 @@ public class SmsManagement implements ManageNotification {
         String recipient = notification.getRecipient();
         String sender = notification.getSender();
 
-        validateInputs(notification);
-        if(IsShortMessage(message)){
+
+        //validateInputs(notification);
+        if(notification.isShortMessage()){
             deliverMessageViaCarrier(message, recipient, sender);
             return List.of(message);
         }
@@ -36,7 +36,7 @@ public class SmsManagement implements ManageNotification {
         return messageList;
     }
 
-    public ArrayList<String> splitMessage(String message) {
+    private ArrayList<String> splitMessage(String message) {
         StringBuilder messageBuilder = new StringBuilder(message);
         int left = 0;
         int countParts = 1;
