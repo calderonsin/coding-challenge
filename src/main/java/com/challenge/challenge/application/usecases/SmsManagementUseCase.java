@@ -1,7 +1,7 @@
 package com.challenge.challenge.application.usecases;
 
 import com.challenge.challenge.domain.Notification;
-import com.challenge.challenge.exceptions.SmsValidationException;
+import com.challenge.challenge.application.exceptions.SmsValidationException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

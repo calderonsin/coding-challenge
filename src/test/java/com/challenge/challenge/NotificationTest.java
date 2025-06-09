@@ -1,7 +1,7 @@
 package com.challenge.challenge;
 
 import com.challenge.challenge.domain.Notification;
-import com.challenge.challenge.exceptions.SmsValidationException;
+import com.challenge.challenge.application.exceptions.SmsValidationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

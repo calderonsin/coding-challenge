@@ -2,6 +2,7 @@ package com.challenge.challenge;
 
 import com.challenge.challenge.application.usecases.SmsManagementUseCase;
 import com.challenge.challenge.domain.Notification;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import java.util.List;
@@ -9,12 +10,17 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SmsManagementUseCaseTest {
-    private final SmsManagementUseCase smsManagementUseCase = new SmsManagementUseCase();
+    private  SmsManagementUseCase smsManagementUseCase;
     private final String LONG_MESSAGE = "This is a message which has more than 160 character for testing the amazing splited function and making a good impresion in Leverest. We should look for another way to create a veryyyyyyyyyyy long string";
     private final String EXACTLY_160_CHARS = "A".repeat(160);
     private final String SHORT_MESSAGE = "Short message";
     private final String CORRECT_PHONE_NUMBER = "1234567";
     private static final String VERY_LONG_MESSAGE = "This is a very long message that will definitely need to be split into multiple parts. ".repeat(100);
+
+    @BeforeEach
+    void setUp() {
+        smsManagementUseCase = new SmsManagementUseCase();
+    }
 
     @Test
     @DisplayName("Should not split message when less than 160 characters")

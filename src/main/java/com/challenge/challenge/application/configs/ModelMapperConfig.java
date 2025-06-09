@@ -1,4 +1,4 @@
-package com.challenge.challenge.configs;
+package com.challenge.challenge.application.configs;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

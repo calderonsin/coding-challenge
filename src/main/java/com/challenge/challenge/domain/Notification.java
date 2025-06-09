@@ -1,7 +1,7 @@
 package com.challenge.challenge.domain;
 
 
-import com.challenge.challenge.exceptions.SmsValidationException;
+import com.challenge.challenge.application.exceptions.SmsValidationException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
