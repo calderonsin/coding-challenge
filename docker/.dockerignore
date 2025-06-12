@@ -1,0 +1,64 @@
+# =====================================================
+# DOCKERIGNORE FILE
+# Excludes files/directories from Docker build context
+# =====================================================
+
+# Gradle build artifacts
+#build/
+../.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Git
+.git/
+.gitignore
+README.md
+
+# Docker files (no need to copy into container)
+docker/Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Temporary files
+tmp/
+temp/
+
+# Environment files (may contain secrets)
+.env
+.env.local
+.env.*.local
+
+# Documentation
+docs/
+*.md
+
+# CI/CD files
+.github/
+.gitlab-ci.yml
+Jenkinsfile
