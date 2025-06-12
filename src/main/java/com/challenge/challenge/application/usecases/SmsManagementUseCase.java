@@ -17,15 +17,11 @@ public class SmsManagementUseCase implements ManageNotification {
         return sendSmsMessage(notification);
     }
 
-
-        // You need to fix this method, currently it will crash with > 160 char messages.
     private List<String> sendSmsMessage (Notification notification) {
         String message = notification.getMessage();
         String recipient = notification.getRecipient();
         String sender = notification.getSender();
 
-
-        //validateInputs(notification);
         if(notification.isShortMessage()){
             deliverMessageViaCarrier(message, recipient, sender);
             return List.of(message);
@@ -41,21 +37,22 @@ public class SmsManagementUseCase implements ManageNotification {
         int left = 0;
         int countParts = 1;
         int expectedParts = calculateTotalParts(message);
+        StringBuilder sb = new StringBuilder();
         ArrayList<String> messageList = new  ArrayList<>();
-
         while(left < messageBuilder.length()){
             String suffix = String.format(SUFFIX_TEMPLATE, countParts, expectedParts);
             int availableSpace = SMS_MAX_LENGTH - suffix.length();
             int right = Math.min( left + availableSpace, message.length());
 
             if (right < message.length()) right = findOptimalSplitPoint(message, left, right);
-            messageList.add( new StringBuilder(message.substring(left, right)).append(suffix).toString());
-
+            sb.append(message, left, right);
+            sb.append(suffix);
+            messageList.add(message.substring(left, right) + suffix);
+            sb.setLength(0);
             left = right;
             countParts += 1;
 
         }
-
         return  messageList;
     }
     private int findOptimalSplitPoint(String message, int start, int maxEnd) {
@@ -68,65 +65,14 @@ public class SmsManagementUseCase implements ManageNotification {
         return maxEnd;
     }
 
-    private int calculateTotalParts(String message) {
+    private  int calculateTotalParts(String message) {
+        int maxSuffix = " - Part 99 of 99".length();
+        int minAvailableSpace = SMS_MAX_LENGTH - maxSuffix;
         int messageLength = message.length();
-        int estimatedParts = 1;
-        // Iteratively calculate until stable
-        while (true) {
-            String testSuffix = String.format(SUFFIX_TEMPLATE, estimatedParts, estimatedParts);
-            int availableSpacePerPart = SMS_MAX_LENGTH - testSuffix.length();
-            int calculatedParts = (int) Math.ceil((double) messageLength / availableSpacePerPart);
-
-            if (calculatedParts <= estimatedParts) {
-                return estimatedParts;
-            }
-            estimatedParts = calculatedParts;
-
-            // Safety check to prevent infinite loop
-            if (estimatedParts > 1000) {
-                return 1000;
-            }
-        }
+        return (int) Math.ceil((double) messageLength / minAvailableSpace);
     }
-
-    private Boolean IsShortMessage(String message) {
-        return message.length() <= SMS_MAX_LENGTH;
-    }
-
-
-    // This method actually sends the message via an already existing SMS carrier
-// You just have to display the message to your console
     private void deliverMessageViaCarrier (String text, String recipient, String sender) {
         System.out.println(text);
     }
-    private void validateInputs(Notification notification) {
-        String message = notification.getMessage();
-        String recipient = notification.getRecipient();
-        String sender = notification.getSender();
-        if (Objects.isNull(message) || message.trim().isEmpty()) {
-            throw new SmsValidationException("Message cannot be null or empty");
-        }
 
-        if (Objects.isNull(recipient) || recipient.trim().isEmpty()) {
-            throw new SmsValidationException("Recipient cannot be null or empty");
-        }
-
-        if (Objects.isNull(sender) || sender.trim().isEmpty()) {
-            throw new SmsValidationException("Sender cannot be null or empty");
-        }
-
-        // Basic phone number validation
-        if (isNotValidPhoneNumber(recipient)) {
-            throw new SmsValidationException("Invalid recipient phone number format");
-        }
-
-        if (isNotValidPhoneNumber(sender)) {
-            throw new SmsValidationException("Invalid sender phone number format");
-        }
-    }
-
-    private boolean isNotValidPhoneNumber(String phoneNumber) {
-        String cleaned = phoneNumber.replaceAll("[\\s\\-\\(\\)\\+]", "");
-        return !cleaned.matches("\\d{7,15}");
-    }
 }
